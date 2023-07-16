@@ -9,7 +9,7 @@ void retrieveUrls(const json& node, std::vector<std::string>& urls) {
     if (node.contains("children")) {
         const auto& children = node["children"];
         for (const auto& child : children) {
-            if (child.contains("children")) {
+            if (child.contains("type") && child["type"] == "folder") {
                 // Recursive call to handle nested folders
                 retrieveUrls(child, urls);
             } else if (child.contains("url")) {
@@ -21,7 +21,7 @@ void retrieveUrls(const json& node, std::vector<std::string>& urls) {
 }
 
 int main() {
-    std::ifstream file("C:/Users/<user>/AppData/Local/Google/Chrome/User Data/Default/bookmarks.json");
+    std::ifstream file("C:/Users/<user>/AppData/Local/Google/Chrome/User Data/Default/bookmarks");  // Path to the bookmark file
     if (!file) {
         std::cout << "Failed to open bookmarks.json" << std::endl;
         return 1;
@@ -33,7 +33,8 @@ int main() {
 
     std::vector<std::string> urls;
     // Call the function to retrieve URLs from the bookmarks JSON
-    retrieveUrls(bookmarks, urls);
+    retrieveUrls(bookmarks["roots"]["bookmark_bar"], urls);
+    retrieveUrls(bookmarks["roots"]["other"], urls);
 
     std::cout << "Retrieved URLs:" << std::endl;
     // Print the retrieved URLs
